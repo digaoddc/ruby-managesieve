@@ -13,6 +13,8 @@ module Sieve
   class Parser
     def initialize(text_sieve=nil)
       @text_sieve = text_sieve
+      @requires = []
+      @filters = []
       parse unless @text_sieve.nil?
     end
 
@@ -31,7 +33,10 @@ module Sieve
     # Make de parse and put results in variables
     def parse
       #return a array with string of elements: "xxxx", "yyyyyy"
-      regex_requires = "^require\s\[(\S+)\];$"
+      @text_sieve.scan(/^require\s\["(\S+)"\];$/).each do |r| 
+        @requires = []
+      end
+
 
       #return a array with string of filters
       regex_rules = "(^[#[a-zA-Z0-9\s\:\[\]\_]]*\nif[\s\w\:\"\.\;\(\)\,]*\n\{[a-zA-Z0-9\s\@\<>=\:\[\]\_\:\"\.\;\(\)\,\-\/]*\n\}$)"
