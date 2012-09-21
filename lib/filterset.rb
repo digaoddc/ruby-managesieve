@@ -9,8 +9,13 @@
 #@see http://www.faqs.org/rfcs/rfc5229.html
 # @author Thiago Coutinho<thiago @ osfeio.com>(selialkile)
 # @note This code folow de "THE BEER-WARE LICENSE"
+
+%w(filter action condition).each do |entity|
+  require_relative entity
+end
+
 module Sieve
-  class Parser
+  class FilterSet
     def initialize(text_sieve=nil)
       @text_sieve = text_sieve
       @requires = []
@@ -34,12 +39,13 @@ module Sieve
     def parse
       #return a array with string of elements: "xxxx", "yyyyyy"
       @text_sieve.scan(/^require\s\["(\S+)"\];$/).each do |r| 
-        @requires = []
+        @requires.concat(r[0].split('","'))
       end
 
+      @text_sieve.scan(/(^#.*\nif[\s\w\:\"\.\;\(\)\,\-]*\n\{[a-zA-Z0-9\s\@\<>=\:\[\]\_\"\.\;\(\)\,\-\/]*\n\}$)/).each do |f| 
+        @filters << Sieve::Filter.new(f[0])
+      end
 
-      #return a array with string of filters
-      regex_rules = "(^[#[a-zA-Z0-9\s\:\[\]\_]]*\nif[\s\w\:\"\.\;\(\)\,]*\n\{[a-zA-Z0-9\s\@\<>=\:\[\]\_\:\"\.\;\(\)\,\-\/]*\n\}$)"
     end
   end
 end
